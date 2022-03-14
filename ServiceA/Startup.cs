@@ -1,3 +1,5 @@
+using ConfigurationCase.Core.Caching;
+using ConfigurationCase.Core.Models;
 using ConfigurationCase.DAL;
 using ConfigurationCase.DAL.Abstracts;
 using ConfigurationCase.DAL.Services;
@@ -49,6 +51,11 @@ namespace ServiceA
 
             services.AddDbContext<ConfigurationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            var redisConfig = Configuration.GetSection("RedisConfig");
+            services.Configure<RedisServerConfig>(redisConfig);
+
+            services.AddTransient<IRedisCacheService, RedisCacheService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

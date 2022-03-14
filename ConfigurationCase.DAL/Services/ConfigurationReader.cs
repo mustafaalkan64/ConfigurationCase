@@ -1,5 +1,7 @@
-﻿using ConfigurationCase.DAL.Abstracts;
+﻿using ConfigurationCase.Core.Caching;
+using ConfigurationCase.DAL.Abstracts;
 using ConfigurationCase.DAL.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,12 @@ namespace ConfigurationCase.DAL.Services
 {
     public class ConfigurationReader : IConfigurationReader
     {
+        private readonly IRedisCacheService _redisCacheManager;
+        public ConfigurationReader(IRedisCacheService redisCacheManager)
+        {
+            _redisCacheManager = redisCacheManager;
+        }
+
         public async Task<T> GetValue<T>(string key, string connectionString)
         {
             var optionsBuilder = new DbContextOptionsBuilder();
@@ -29,10 +37,20 @@ namespace ConfigurationCase.DAL.Services
             var optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseSqlServer(connectionString);
 
-            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            var cacheKey = "configurations";
+            try
             {
-                var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
-                return records;
+                using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+                {
+                    var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
+                    return records;
+                    //_redisCacheManager.Set(cacheKey, records);
+                }
+            }
+            catch (SqlException ex)
+            {
+                var cacheList = _redisCacheManager.Get<List<Configuration>>(cacheKey);
+                return cacheList;
             }
         }
 
