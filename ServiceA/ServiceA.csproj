@@ -13,10 +13,13 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+	  <PackageReference Include="MassTransit" Version="7.3.1" />
+	  <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+	  <PackageReference Include="MassTransit.RabbitMQ" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConfigurationCase.DAL\ConfigurationCase.DAL.csproj" />
+    <ProjectReference Include="..\Configuration.Core\Configuration.Core.csproj" />
   </ItemGroup>
 
 </Project>

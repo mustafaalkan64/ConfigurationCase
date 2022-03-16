@@ -1,16 +1,12 @@
+using ConfigurationCase.Core;
 using ConfigurationCase.Core.Caching;
 using ConfigurationCase.Core.Models;
-using ConfigurationCase.DAL;
-using ConfigurationCase.DAL.Abstracts;
-using ConfigurationCase.DAL.Services;
-using Hangfire;
-using Hangfire.SqlServer;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -42,7 +38,6 @@ namespace ServiceA
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ServiceA", Version = "v1" });
             });
 
-            services.AddTransient<IConfigurationReader, ConfigurationReader>();
             // Add functionality to inject IOptions<T>
             services.AddOptions();
 
@@ -51,31 +46,21 @@ namespace ServiceA
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddDbContext<ConfigurationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(Configuration.GetConnectionString("RabbitMQ"));
+                });
+            });
+
+            services.AddMassTransitHostedService();
 
             var redisConfig = Configuration.GetSection("RedisConfig");
             services.Configure<RedisServerConfig>(redisConfig);
 
-            //// Add Hangfire services.
-            //services.AddHangfire(configuration => configuration
-            //    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-            //    .UseSimpleAssemblyNameTypeSerializer()
-            //    .UseRecommendedSerializerSettings()
-            //    .UseSqlServerStorage(Configuration.GetConnectionString("Hangfire"), new SqlServerStorageOptions
-            //    {
-            //        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-            //        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-            //        QueuePollInterval = TimeSpan.Zero,
-            //        UseRecommendedIsolationLevel = true,
-            //        DisableGlobalLocks = true
-            //    }));
-
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("Hangfire")));
-            // Add the processing server as IHostedService
-            services.AddHangfireServer();
-
             services.AddTransient<IRedisCacheService, RedisCacheService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,8 +73,6 @@ namespace ServiceA
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ServiceA v1"));
             }
 
-            app.UseHangfireDashboard();
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -99,7 +82,6 @@ namespace ServiceA
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHangfireDashboard();
             });
         }
     }
