@@ -3,6 +3,8 @@ using ConfigurationCase.Core.Models;
 using ConfigurationCase.DAL;
 using ConfigurationCase.DAL.Abstracts;
 using ConfigurationCase.DAL.Services;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -55,6 +57,24 @@ namespace ServiceA
             var redisConfig = Configuration.GetSection("RedisConfig");
             services.Configure<RedisServerConfig>(redisConfig);
 
+            //// Add Hangfire services.
+            //services.AddHangfire(configuration => configuration
+            //    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            //    .UseSimpleAssemblyNameTypeSerializer()
+            //    .UseRecommendedSerializerSettings()
+            //    .UseSqlServerStorage(Configuration.GetConnectionString("Hangfire"), new SqlServerStorageOptions
+            //    {
+            //        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+            //        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+            //        QueuePollInterval = TimeSpan.Zero,
+            //        UseRecommendedIsolationLevel = true,
+            //        DisableGlobalLocks = true
+            //    }));
+
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("Hangfire")));
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+
             services.AddTransient<IRedisCacheService, RedisCacheService>();
         }
 
@@ -68,6 +88,8 @@ namespace ServiceA
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ServiceA v1"));
             }
 
+            app.UseHangfireDashboard();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -77,6 +99,7 @@ namespace ServiceA
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHangfireDashboard();
             });
         }
     }

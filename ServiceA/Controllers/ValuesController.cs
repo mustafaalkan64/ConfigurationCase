@@ -27,7 +27,7 @@ namespace ServiceA.Controllers
         {
             var appName = this.config.Value.Name;
             var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
-            var result = await configurationReader.ReadConfigurationsAsync(appName, conString, 30);
+            var result = await configurationReader.ReadConfigurationsAsync(appName, conString, 60);
             return Ok(result);
         }
 
