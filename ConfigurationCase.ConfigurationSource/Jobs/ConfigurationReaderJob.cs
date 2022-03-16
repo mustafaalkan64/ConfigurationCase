@@ -33,7 +33,6 @@ namespace ConfigurationCase.ConfigurationSource.Jobs
             {
                 var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
                 _redisCacheManager.Set(cacheKey, records);
-                var a = _redisCacheManager.Get<List<ConfigurationTb>>(cacheKey);
             }
 
         }

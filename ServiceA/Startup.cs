@@ -1,3 +1,5 @@
+using ConfigurationCase.ConfigurationSource.Abstracts;
+using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core;
 using ConfigurationCase.Core.Caching;
 using ConfigurationCase.Core.Models;
@@ -55,6 +57,8 @@ namespace ServiceA
             });
 
             services.AddMassTransitHostedService();
+
+            services.AddTransient<IConfigurationService, ConfigurationService>();
 
             var redisConfig = Configuration.GetSection("RedisConfig");
             services.Configure<RedisServerConfig>(redisConfig);

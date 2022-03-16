@@ -7,9 +7,9 @@ namespace ConfigurationCase.ConfigurationSource.Consumers
 {
     public class ReadConfigurationsConsumer : IConsumer<RequestConfigurationEvent>
     {
-        private readonly IConfigurationReaderService _service;
+        private readonly IConfigurationJobService _service;
 
-        public ReadConfigurationsConsumer(IConfigurationReaderService service)
+        public ReadConfigurationsConsumer(IConfigurationJobService service)
         {
             _service = service;
         }

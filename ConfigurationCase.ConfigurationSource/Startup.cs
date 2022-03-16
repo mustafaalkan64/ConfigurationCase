@@ -42,7 +42,7 @@ namespace ConfigurationCase.ConfigurationSource
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConfigurationCase.ConfigurationSource", Version = "v1" });
             });
 
-            services.AddTransient<IConfigurationReaderService, ConfigurationReaderService>();
+            services.AddTransient<IConfigurationJobService, ConfigurationJobService>();
             // Add functionality to inject IOptions<T>
             services.AddOptions();
 

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Configuration.Core\Configuration.Core.csproj" />
+    <ProjectReference Include="..\Configuration.CommonService\Configuration.CommonService.csproj" />
   </ItemGroup>
 
 </Project>

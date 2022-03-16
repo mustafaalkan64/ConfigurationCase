@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ConfigurationCase.ConfigurationSource.Abstracts
 {
-    public interface IConfigurationReaderService
+    public interface IConfigurationService
     {
-        Task ReadConfigurationAsync(string applicationName, string connectionString, int refreshTimerIntervalInMs);
-        Task<T> GetValue<T>(string key, string connectionString);
+        Task<IList<ConfigurationTb>> GetConfigurationsAsync(string applicationName);
+        Task<T> GetValue<T>(string key, string connectionString, string appName);
     }
 }

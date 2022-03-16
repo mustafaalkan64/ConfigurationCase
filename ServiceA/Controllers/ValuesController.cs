@@ -1,4 +1,5 @@
 ﻿using Configuration.Core.Events;
+using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.Core;
 using ConfigurationCase.Core.Caching;
 using ConfigurationCase.Core.CustomExceptions;
@@ -20,48 +21,52 @@ namespace ServiceA.Controllers
         private readonly IOptions<AppSettings> config;
         private readonly IConfiguration _configuration;
         private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IRedisCacheService _redisCacheManager;
+        private readonly IConfigurationService _configurationReaderService;
         private readonly string cacheKey = "configurations";
 
-        public ValuesController(IOptions<AppSettings> config, IConfiguration configuration, IPublishEndpoint publishEndpoint, IRedisCacheService redisCacheManager)
+        public ValuesController(IOptions<AppSettings> config, IConfiguration configuration, IPublishEndpoint publishEndpoint, IConfigurationService configurationReaderService)
         {
             this.config = config;
             this._configuration = configuration;
             this._publishEndpoint = publishEndpoint;
-            this._redisCacheManager = redisCacheManager;
+            this._configurationReaderService = configurationReaderService;
         }
 
         [HttpGet]  
         public async Task<IActionResult> GetValues()
         {
             var appName = this.config.Value.Name;
-            List<ConfigurationTb> result;
+            IList<ConfigurationTb> result;
+            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
+            result = await _configurationReaderService.GetConfigurationsAsync(appName);
+            return Ok(result);
+        }
+
+
+        [HttpGet]
+        [Route("execute_read_configuration_job")]
+        public async Task<IActionResult> ExecuteJob(int miliSecond)
+        {
+            var appName = this.config.Value.Name;
             var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
             RequestConfigurationEvent requestConfigurationEvent = new RequestConfigurationEvent()
             {
                 ApplicationName = appName,
                 ConnectionString = conString,
-                RefreshTimerIntervalInMs = 3000 
+                RefreshTimerIntervalInMs = miliSecond
             };
             await _publishEndpoint.Publish(requestConfigurationEvent);
-            try
-            {
-                result = _redisCacheManager.Get<List<ConfigurationTb>>(cacheKey + $"_{appName}");
-            }
-            catch (RedisNotAvailableException)
-            {
-                result = new List<ConfigurationTb>();
-            }
-            return Ok(result);
+            return NoContent();
         }
 
 
         [HttpGet("get_value_by_key")]
         public async Task<IActionResult> GetValueByKey(string key)
         {
+            var appName = this.config.Value.Name;
             var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
-            //var result = await configurationReader.GetValue<string>(key, conString);
-            return Ok();
+            var result = await _configurationReaderService.GetValue<string>(key, conString, appName);
+            return Ok(result);
         }
     }
 }
