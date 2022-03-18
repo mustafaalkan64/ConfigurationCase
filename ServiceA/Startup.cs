@@ -1,5 +1,6 @@
 using AutoMapper;
 using Configuration.CommonService.Mapper;
+using ConfigurationCase.CommonService;
 using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,6 +43,10 @@ namespace ServiceA
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ServiceA", Version = "v1" });
             });
+
+
+            services.AddDbContext<ConfigurationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Add functionality to inject IOptions<T>
             services.AddOptions();

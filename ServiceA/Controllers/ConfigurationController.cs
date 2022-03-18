@@ -51,7 +51,6 @@ namespace ServiceA.Controllers
         [Route("execute_read_configuration_job")]
         public async Task<IActionResult> ExecuteJob(int miliSecond)
         {
-            var appName = this.config.Value.Name;
             RequestConfigurationEvent requestConfigurationEvent = new RequestConfigurationEvent()
             {
                 ApplicationName = appName,
@@ -66,7 +65,7 @@ namespace ServiceA.Controllers
         [HttpGet("get_value_by_key")]
         public async Task<IActionResult> GetValueByKey(string key)
         {
-            var result = await _configurationService.GetValue<string>(key, conString, appName);
+            var result = await _configurationService.GetValue<string>(key, appName);
             return Ok(result);
         }
 
@@ -83,7 +82,7 @@ namespace ServiceA.Controllers
                 Type = addConfigurationDto.Type
             };
 
-            await _configurationService.AddNewRecord(configurationDto, conString);
+            await _configurationService.AddNewRecord(configurationDto);
             return NoContent();
         }
 
@@ -92,7 +91,7 @@ namespace ServiceA.Controllers
         public async Task<IActionResult> UpdateConfiguration(UpdateConfigurationDto updateConfigurationDto)
         {
             updateConfigurationDto.ApplicationName = appName;
-            await _configurationService.UpdateRecord(updateConfigurationDto, conString);
+            await _configurationService.UpdateRecord(updateConfigurationDto);
             return NoContent();
         }
 
@@ -100,7 +99,7 @@ namespace ServiceA.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteConfiguration(int id)
         {
-            await _configurationService.RemoveRecord(id, conString);
+            await _configurationService.RemoveRecord(id);
             return NoContent();
         }
     }

@@ -19,23 +19,19 @@ namespace ConfigurationCase.ConfigurationSource.Services
     {
         private readonly IRedisCacheService _redisCacheManager;
         private readonly IMapper _mapper;
-        public ConfigurationService(IRedisCacheService redisCacheManager, IMapper mapper)
+        private readonly ConfigurationDbContext dbContext;
+        public ConfigurationService(IRedisCacheService redisCacheManager, IMapper mapper, ConfigurationDbContext dbContext)
         {
             _redisCacheManager = redisCacheManager;
             _mapper = mapper;
+            this.dbContext = dbContext;
         }
 
-        public async Task<T> GetValue<T>(string key, string connectionString, string appName)
+        public async Task<T> GetValue<T>(string key, string appName)
         {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlServer(connectionString);
             var typeName = typeof(T).Name;
-
-            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
-            {
-                var record = await db.Configuration.Where(x => x.Name == key && x.Type.ToUpper() == typeName.ToUpper() && x.ApplicationName == appName).FirstOrDefaultAsync();
-                return (T)Convert.ChangeType(record.Value, typeof(T));
-            }
+            var record = await dbContext.Configuration.Where(x => x.Name == key && x.Type.ToUpper() == typeName.ToUpper() && x.ApplicationName == appName).FirstOrDefaultAsync();
+            return (T)Convert.ChangeType(record.Value, typeof(T));
         }
 
         public async Task<IList<ConfigurationTb>> GetConfigurationsAsync(string applicationName)
@@ -50,60 +46,42 @@ namespace ConfigurationCase.ConfigurationSource.Services
                 result = new List<ConfigurationTb>();
             }
             return result;
-            
+
         }
 
-        public async Task AddNewRecord(ConfigurationDto configurationDto, string connectionString)
+        public async Task AddNewRecord(ConfigurationDto configurationDto)
         {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlServer(connectionString);
-
-            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
-            {
-                var configuration = _mapper.Map<ConfigurationTb>(configurationDto);
-                await db.Configuration.AddAsync(configuration);
-                await db.SaveChangesAsync();
-            }
+            var configuration = _mapper.Map<ConfigurationTb>(configurationDto);
+            await this.dbContext.Configuration.AddAsync(configuration);
+            await this.dbContext.SaveChangesAsync();
 
         }
 
 
-        public async Task UpdateRecord(UpdateConfigurationDto configurationDto, string connectionString)
+        public async Task UpdateRecord(UpdateConfigurationDto configurationDto)
         {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlServer(connectionString);
-
-            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID);
+            if (configuration == null)
             {
-                var configuration = await db.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID);
-                if(configuration == null)
-                {
-                    throw new ArgumentException("ID Bulunamadı");
-                }
-                var updatedConfiguration = _mapper.Map<ConfigurationTb>(configurationDto);
-                db.Entry(updatedConfiguration).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                throw new ArgumentException("ID Bulunamadı");
             }
+            var updatedConfiguration = _mapper.Map<ConfigurationTb>(configurationDto);
+            this.dbContext.Entry(updatedConfiguration).State = EntityState.Modified;
+            await this.dbContext.SaveChangesAsync();
 
         }
 
 
-        public async Task RemoveRecord(int Id, string connectionString)
+        public async Task RemoveRecord(int Id)
         {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlServer(connectionString);
-
-            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == Id);
+            if (configuration == null)
             {
-                var configuration = await db.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == Id);
-                if (configuration == null)
-                {
-                    throw new ArgumentException("ID Bulunamadı");
-                }
-                db.Configuration.Attach(configuration);
-                db.Configuration.Remove(configuration);
-                await db.SaveChangesAsync();
+                throw new ArgumentException("ID Bulunamadı");
             }
+            this.dbContext.Configuration.Attach(configuration);
+            this.dbContext.Configuration.Remove(configuration);
+            await this.dbContext.SaveChangesAsync();
 
         }
 

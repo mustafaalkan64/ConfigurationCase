@@ -11,9 +11,9 @@ namespace ConfigurationCase.ConfigurationSource.Abstracts
     public interface IConfigurationService
     {
         Task<IList<ConfigurationTb>> GetConfigurationsAsync(string applicationName);
-        Task<T> GetValue<T>(string key, string connectionString, string appName);
-        Task AddNewRecord(ConfigurationDto configurationDto, string connectionString);
-        Task UpdateRecord(UpdateConfigurationDto configurationDto, string connectionString);
-        Task RemoveRecord(int Id, string connectionString);
+        Task<T> GetValue<T>(string key, string appName);
+        Task AddNewRecord(ConfigurationDto configurationDto);
+        Task UpdateRecord(UpdateConfigurationDto configurationDto);
+        Task RemoveRecord(int Id);
     }
 }

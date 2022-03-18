@@ -10,7 +10,11 @@ namespace ConfigurationCase.CommonService
 {
     public class ConfigurationDbContext : DbContext
     {
-        public ConfigurationDbContext(DbContextOptions options) : base(options)
+        //public ConfigurationDbContext(DbContextOptions options) : base(options)
+        //{
+        //}
+
+        public ConfigurationDbContext(DbContextOptions<ConfigurationDbContext> options) : base(options)
         {
         }
 
