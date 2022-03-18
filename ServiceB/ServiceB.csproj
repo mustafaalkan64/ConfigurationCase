@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Configuration.CommonService\Configuration.CommonService.csproj" />
 	  <ProjectReference Include="..\Configuration.Core\Configuration.Core.csproj" />
 	</ItemGroup>
 

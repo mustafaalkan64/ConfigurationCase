@@ -9,13 +9,13 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Configuration.Core.Consts;
 
 namespace ConfigurationCase.ConfigurationSource.Jobs
 {
     public class ConfigurationReaderJob
     {
         private readonly IRedisCacheService _redisCacheManager;
-        private string cacheKey = "configurations";
         public ConfigurationReaderJob(IRedisCacheService redisCacheManager)
         {
             _redisCacheManager = redisCacheManager;
@@ -25,14 +25,13 @@ namespace ConfigurationCase.ConfigurationSource.Jobs
         [AutomaticRetry(Attempts = 3)]
         public async Task GetConfigurationsAsync(string applicationName, string connectionString)
         {
-            cacheKey += $"_{applicationName}";
             var optionsBuilder = new DbContextOptionsBuilder();
             optionsBuilder.UseSqlServer(connectionString);
 
             using (var db = new ConfigurationDbContext(optionsBuilder.Options))
             {
                 var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
-                _redisCacheManager.Set(cacheKey, records);
+                _redisCacheManager.Set(StaticVariables.CacheKey + $"_{applicationName}", records);
             }
 
         }

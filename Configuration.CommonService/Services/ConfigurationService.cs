@@ -9,16 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using ConfigurationCase.CommonService;
 using ConfigurationCase.Core.CustomExceptions;
+using Configuration.Core.Consts;
+using Configuration.Core.Models;
+using AutoMapper;
 
 namespace ConfigurationCase.ConfigurationSource.Services
 {
     public class ConfigurationService : IConfigurationService
     {
         private readonly IRedisCacheService _redisCacheManager;
-        private readonly string cacheKey = "configurations";
-        public ConfigurationService(IRedisCacheService redisCacheManager)
+        private readonly IMapper _mapper;
+        public ConfigurationService(IRedisCacheService redisCacheManager, IMapper mapper)
         {
             _redisCacheManager = redisCacheManager;
+            _mapper = mapper;
         }
 
         public async Task<T> GetValue<T>(string key, string connectionString, string appName)
@@ -39,7 +43,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
             IList<ConfigurationTb> result;
             try
             {
-                result = _redisCacheManager.Get<List<ConfigurationTb>>(cacheKey + $"_{applicationName}");
+                result = _redisCacheManager.Get<List<ConfigurationTb>>(StaticVariables.CacheKey + $"_{applicationName}");
             }
             catch (RedisNotAvailableException)
             {
@@ -47,6 +51,60 @@ namespace ConfigurationCase.ConfigurationSource.Services
             }
             return result;
             
+        }
+
+        public async Task AddNewRecord(ConfigurationDto configurationDto, string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            {
+                var configuration = _mapper.Map<ConfigurationTb>(configurationDto);
+                await db.Configuration.AddAsync(configuration);
+                await db.SaveChangesAsync();
+            }
+
+        }
+
+
+        public async Task UpdateRecord(UpdateConfigurationDto configurationDto, string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            {
+                var configuration = await db.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID);
+                if(configuration == null)
+                {
+                    throw new ArgumentException("ID Bulunamadı");
+                }
+                var updatedConfiguration = _mapper.Map<ConfigurationTb>(configurationDto);
+                db.Entry(updatedConfiguration).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+            }
+
+        }
+
+
+        public async Task RemoveRecord(int Id, string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            {
+                var configuration = await db.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == Id);
+                if (configuration == null)
+                {
+                    throw new ArgumentException("ID Bulunamadı");
+                }
+                db.Configuration.Attach(configuration);
+                db.Configuration.Remove(configuration);
+                await db.SaveChangesAsync();
+            }
+
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using Configuration.Core.Events;
+using Configuration.Core.Models;
 using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.Core;
 using ConfigurationCase.Core.Caching;
@@ -21,15 +22,15 @@ namespace ServiceA.Controllers
         private readonly IOptions<AppSettings> config;
         private readonly IConfiguration _configuration;
         private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IConfigurationService _configurationReaderService;
+        private readonly IConfigurationService _configurationService;
         private readonly string cacheKey = "configurations";
 
-        public ValuesController(IOptions<AppSettings> config, IConfiguration configuration, IPublishEndpoint publishEndpoint, IConfigurationService configurationReaderService)
+        public ValuesController(IOptions<AppSettings> config, IConfiguration configuration, IPublishEndpoint publishEndpoint, IConfigurationService configurationService)
         {
             this.config = config;
             this._configuration = configuration;
             this._publishEndpoint = publishEndpoint;
-            this._configurationReaderService = configurationReaderService;
+            this._configurationService = configurationService;
         }
 
         [HttpGet]  
@@ -38,7 +39,7 @@ namespace ServiceA.Controllers
             var appName = this.config.Value.Name;
             IList<ConfigurationTb> result;
             var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
-            result = await _configurationReaderService.GetConfigurationsAsync(appName);
+            result = await _configurationService.GetConfigurationsAsync(appName);
             return Ok(result);
         }
 
@@ -65,8 +66,50 @@ namespace ServiceA.Controllers
         {
             var appName = this.config.Value.Name;
             var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
-            var result = await _configurationReaderService.GetValue<string>(key, conString, appName);
+            var result = await _configurationService.GetValue<string>(key, conString, appName);
             return Ok(result);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> PostConfiguration(AddConfigurationDto addConfigurationDto)
+        {
+            var appName = this.config.Value.Name;
+            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
+            ConfigurationDto configurationDto = new ConfigurationDto()
+            {
+                Name = addConfigurationDto.Name,
+                Value = addConfigurationDto.Value,
+                ApplicationName = appName,
+                IsActive = addConfigurationDto.IsActive,
+                Type = addConfigurationDto.Type
+            };
+
+            await _configurationService.AddNewRecord(configurationDto, conString);
+            return NoContent();
+        }
+
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateConfiguration(UpdateConfigurationDto updateConfigurationDto)
+        {
+            var appName = this.config.Value.Name;
+            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
+
+            updateConfigurationDto.ApplicationName = appName;
+            await _configurationService.UpdateRecord(updateConfigurationDto, conString);
+            return NoContent();
+        }
+
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteConfiguration(int id)
+        {
+            var appName = this.config.Value.Name;
+            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
+
+            await _configurationService.RemoveRecord(id, conString);
+            return NoContent();
         }
     }
 }

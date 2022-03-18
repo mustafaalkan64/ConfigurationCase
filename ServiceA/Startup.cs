@@ -1,3 +1,5 @@
+using AutoMapper;
+using Configuration.CommonService.Mapper;
 using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core;
@@ -64,6 +66,14 @@ namespace ServiceA
             services.Configure<RedisServerConfig>(redisConfig);
 
             services.AddTransient<IRedisCacheService, RedisCacheService>();
+
+            //Automapper
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MapProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
         }
 
