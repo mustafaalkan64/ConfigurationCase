@@ -60,7 +60,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
 
         public async Task UpdateRecord(UpdateConfigurationDto configurationDto)
         {
-            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID);
+            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID && x.ApplicationName == configurationDto.ApplicationName);
             if (configuration == null)
             {
                 throw new ArgumentException("ID Bulunamadı");
@@ -72,9 +72,9 @@ namespace ConfigurationCase.ConfigurationSource.Services
         }
 
 
-        public async Task RemoveRecord(int Id)
+        public async Task RemoveRecord(int Id, string appName)
         {
-            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == Id);
+            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == Id && x.ApplicationName == appName);
             if (configuration == null)
             {
                 throw new ArgumentException("ID Bulunamadı");
@@ -86,9 +86,9 @@ namespace ConfigurationCase.ConfigurationSource.Services
         }
 
 
-        public async Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term)
+        public async Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term, string appName)
         {
-            var result = await this.dbContext.Configuration.AsNoTracking().Where(x => x.Name.Contains(term) || x.Value.Contains(term)).ToListAsync();
+            var result = await this.dbContext.Configuration.AsNoTracking().Where(x => (x.Name.Contains(term) || x.Value.Contains(term)) && x.ApplicationName == appName).ToListAsync();
             var configurations = _mapper.Map<IEnumerable<ConfigurationDto>>(result);
             return configurations;
 

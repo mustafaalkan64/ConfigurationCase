@@ -14,7 +14,7 @@ namespace ConfigurationCase.ConfigurationSource.Abstracts
         Task<T> GetValue<T>(string key, string appName);
         Task AddNewRecord(ConfigurationDto configurationDto);
         Task UpdateRecord(UpdateConfigurationDto configurationDto);
-        Task RemoveRecord(int Id);
-        Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term);
+        Task RemoveRecord(int Id, string appName);
+        Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term, string appName);
     }
 }

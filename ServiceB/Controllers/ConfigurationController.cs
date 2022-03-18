@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ServiceA.Controllers
+namespace ServiceB.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -36,7 +36,7 @@ namespace ServiceA.Controllers
             appName = this.config.Value.Name;
         }
 
-        [HttpGet]  
+        [HttpGet]
         public async Task<IActionResult> GetValues()
         {
             var appName = this.config.Value.Name;

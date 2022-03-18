@@ -1,5 +1,8 @@
 using AutoMapper;
 using Configuration.CommonService.Mapper;
+using ConfigurationCase.CommonService;
+using ConfigurationCase.ConfigurationSource.Abstracts;
+using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core;
 using ConfigurationCase.Core.Caching;
 using ConfigurationCase.Core.Models;
@@ -9,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,12 +37,15 @@ namespace ServiceB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ServiceB", Version = "v1" });
             });
+
+
+            services.AddDbContext<ConfigurationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Add functionality to inject IOptions<T>
             services.AddOptions();
@@ -58,11 +65,12 @@ namespace ServiceB
 
             services.AddMassTransitHostedService();
 
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+
             var redisConfig = Configuration.GetSection("RedisConfig");
             services.Configure<RedisServerConfig>(redisConfig);
 
             services.AddTransient<IRedisCacheService, RedisCacheService>();
-
 
             //Automapper
             var mappingConfig = new MapperConfiguration(mc =>
