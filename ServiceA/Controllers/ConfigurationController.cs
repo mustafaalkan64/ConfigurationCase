@@ -17,20 +17,23 @@ namespace ServiceA.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class ConfigurationController : ControllerBase
     {
         private readonly IOptions<AppSettings> config;
         private readonly IConfiguration _configuration;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly IConfigurationService _configurationService;
-        private readonly string cacheKey = "configurations";
+        private readonly string conString;
+        private readonly string appName;
 
-        public ValuesController(IOptions<AppSettings> config, IConfiguration configuration, IPublishEndpoint publishEndpoint, IConfigurationService configurationService)
+        public ConfigurationController(IOptions<AppSettings> config, IConfiguration configuration, IPublishEndpoint publishEndpoint, IConfigurationService configurationService)
         {
             this.config = config;
             this._configuration = configuration;
             this._publishEndpoint = publishEndpoint;
             this._configurationService = configurationService;
+            conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection");
+            appName = this.config.Value.Name;
         }
 
         [HttpGet]  
@@ -38,7 +41,7 @@ namespace ServiceA.Controllers
         {
             var appName = this.config.Value.Name;
             IList<ConfigurationTb> result;
-            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
+            //var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
             result = await _configurationService.GetConfigurationsAsync(appName);
             return Ok(result);
         }
@@ -49,7 +52,6 @@ namespace ServiceA.Controllers
         public async Task<IActionResult> ExecuteJob(int miliSecond)
         {
             var appName = this.config.Value.Name;
-            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
             RequestConfigurationEvent requestConfigurationEvent = new RequestConfigurationEvent()
             {
                 ApplicationName = appName,
@@ -64,8 +66,6 @@ namespace ServiceA.Controllers
         [HttpGet("get_value_by_key")]
         public async Task<IActionResult> GetValueByKey(string key)
         {
-            var appName = this.config.Value.Name;
-            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
             var result = await _configurationService.GetValue<string>(key, conString, appName);
             return Ok(result);
         }
@@ -74,8 +74,6 @@ namespace ServiceA.Controllers
         [HttpPost]
         public async Task<IActionResult> PostConfiguration(AddConfigurationDto addConfigurationDto)
         {
-            var appName = this.config.Value.Name;
-            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
             ConfigurationDto configurationDto = new ConfigurationDto()
             {
                 Name = addConfigurationDto.Name,
@@ -93,9 +91,6 @@ namespace ServiceA.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateConfiguration(UpdateConfigurationDto updateConfigurationDto)
         {
-            var appName = this.config.Value.Name;
-            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
-
             updateConfigurationDto.ApplicationName = appName;
             await _configurationService.UpdateRecord(updateConfigurationDto, conString);
             return NoContent();
@@ -105,9 +100,6 @@ namespace ServiceA.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteConfiguration(int id)
         {
-            var appName = this.config.Value.Name;
-            var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
-
             await _configurationService.RemoveRecord(id, conString);
             return NoContent();
         }
