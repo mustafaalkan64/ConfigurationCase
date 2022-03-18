@@ -30,7 +30,7 @@ namespace ConfigurationCase.ConfigurationSource.Jobs
 
             using (var db = new ConfigurationDbContext(optionsBuilder.Options))
             {
-                var records = await db.Configuration.AsNoTracking().Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
+                var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
                 _redisCacheManager.Set(StaticVariables.CacheKey + $"_{applicationName}", records);
             }
 

@@ -19,7 +19,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
         public async Task ReadConfigurationAsync(string applicationName, string connectionString, int refreshTimerIntervalInMs)
         {
             var minutes = Convert.ToInt32(TimeSpan.FromMilliseconds(refreshTimerIntervalInMs).TotalMinutes);
-            Hangfire.RecurringJob.AddOrUpdate<ConfigurationReaderJob>(job => job.GetConfigurationsAsync(applicationName, connectionString), cronExpression: $"*/{ (minutes > 0 ? minutes : 1) } * * * *");
+            Hangfire.RecurringJob.AddOrUpdate<ConfigurationReaderJob>($"Job_{applicationName}", job => job.GetConfigurationsAsync(applicationName, connectionString), cronExpression: $"*/{ (minutes > 0 ? minutes : 1) } * * * *");
         }
 
     }
