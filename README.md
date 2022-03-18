@@ -35,5 +35,7 @@ Sadece kendi ApplicationName isimlerine göre confgiuration kaydı atıp listele
 Ayrıca her iki proje de ConfigurationSource projesine event publish edip Job başlatabilir.
 
 
+
+
 TDD ve Unit Testler Eklenecektir
 
