@@ -34,3 +34,8 @@ Bu 2 proje de bağımsız projeler olup CommonService ile haberleşir ve bu serv
 Sadece kendi ApplicationName isimlerine göre confgiuration kaydı atıp listeleyebilirler.
 Ayrıca her iki proje de ConfigurationSource projesine event publish edip Job başlatabilir.
 
+
+
+
+TDD ve Unit Testler Eklenecektir
+
