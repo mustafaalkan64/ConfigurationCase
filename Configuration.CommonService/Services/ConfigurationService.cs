@@ -30,8 +30,8 @@ namespace ConfigurationCase.ConfigurationSource.Services
         public async Task<T> GetValue<T>(string key, string appName)
         {
             var typeName = typeof(T).Name;
-            var record = await dbContext.Configuration.Where(x => x.Name == key && x.Type.ToUpper() == typeName.ToUpper() && x.ApplicationName == appName).FirstOrDefaultAsync();
-            return (T)Convert.ChangeType(record.Value, typeof(T));
+            var record = await dbContext.Configuration.Where(x => x.Name == key && x.ApplicationName == appName).FirstOrDefaultAsync();
+            return (T)Convert.ChangeType(record?.Value ?? string.Empty, typeof(T));
         }
 
         public async Task<IList<ConfigurationTb>> GetConfigurationsAsync(string applicationName)
@@ -82,6 +82,15 @@ namespace ConfigurationCase.ConfigurationSource.Services
             this.dbContext.Configuration.Attach(configuration);
             this.dbContext.Configuration.Remove(configuration);
             await this.dbContext.SaveChangesAsync();
+
+        }
+
+
+        public async Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term)
+        {
+            var result = await this.dbContext.Configuration.AsNoTracking().Where(x => x.Name.Contains(term) || x.Value.Contains(term)).ToListAsync();
+            var configurations = _mapper.Map<IEnumerable<ConfigurationDto>>(result);
+            return configurations;
 
         }
 

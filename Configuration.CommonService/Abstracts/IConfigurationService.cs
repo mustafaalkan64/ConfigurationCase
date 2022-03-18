@@ -15,5 +15,6 @@ namespace ConfigurationCase.ConfigurationSource.Abstracts
         Task AddNewRecord(ConfigurationDto configurationDto);
         Task UpdateRecord(UpdateConfigurationDto configurationDto);
         Task RemoveRecord(int Id);
+        Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term);
     }
 }

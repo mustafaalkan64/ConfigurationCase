@@ -41,7 +41,6 @@ namespace ServiceA.Controllers
         {
             var appName = this.config.Value.Name;
             IList<ConfigurationTb> result;
-            //var conString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection"); // read logDb connection 
             result = await _configurationService.GetConfigurationsAsync(appName);
             return Ok(result);
         }
@@ -66,6 +65,13 @@ namespace ServiceA.Controllers
         public async Task<IActionResult> GetValueByKey(string key)
         {
             var result = await _configurationService.GetValue<string>(key, appName);
+            return Ok(result);
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> Filter(string term)
+        {
+            var result = await _configurationService.GetRecordsByTerm(term);
             return Ok(result);
         }
 
