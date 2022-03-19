@@ -1,11 +1,11 @@
 using AutoMapper;
 using Configuration.CommonService.Mapper;
-using ConfigurationCase.CommonService;
 using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core;
 using ConfigurationCase.Core.Caching;
 using ConfigurationCase.Core.Models;
+using ConfigurationCase.DAL;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

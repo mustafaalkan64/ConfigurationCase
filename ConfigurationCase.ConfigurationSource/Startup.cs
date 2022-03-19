@@ -3,6 +3,7 @@ using ConfigurationCase.ConfigurationSource.Consumers;
 using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core.Caching;
 using ConfigurationCase.Core.Models;
+using ConfigurationCase.DAL;
 using Hangfire;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;

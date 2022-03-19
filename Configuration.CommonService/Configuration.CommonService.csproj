@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Configuration.Core\Configuration.Core.csproj" />
+    <ProjectReference Include="..\Configuration.DAL\Configuration.DAL.csproj" />
   </ItemGroup>
 
 </Project>

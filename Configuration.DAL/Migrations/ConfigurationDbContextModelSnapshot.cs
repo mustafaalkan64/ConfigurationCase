@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ConfigurationCase.DAL.Migrations
+namespace Configuration.DAL.Migrations
 {
     [DbContext(typeof(ConfigurationDbContext))]
     partial class ConfigurationDbContextModelSnapshot : ModelSnapshot
@@ -18,7 +18,7 @@ namespace ConfigurationCase.DAL.Migrations
                 .HasAnnotation("ProductVersion", "5.0.15")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("ConfigurationCase.DAL.Entities.Configuration", b =>
+            modelBuilder.Entity("ConfigurationCase.Core.Entities.ConfigurationTb", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()

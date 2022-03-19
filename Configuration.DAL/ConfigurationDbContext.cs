@@ -6,11 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigurationCase.ConfigurationSource
+namespace ConfigurationCase.DAL
 {
     public class ConfigurationDbContext : DbContext
     {
-        public ConfigurationDbContext(DbContextOptions options) : base(options)
+        //public ConfigurationDbContext(DbContextOptions options) : base(options)
+        //{
+        //}
+
+        public ConfigurationDbContext(DbContextOptions<ConfigurationDbContext> options) : base(options)
         {
         }
 

@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ConfigurationCase.DAL.Migrations
+namespace Configuration.DAL.Migrations
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20220313120701_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20220319192426_Initial_Migration")]
+    partial class Initial_Migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace ConfigurationCase.DAL.Migrations
                 .HasAnnotation("ProductVersion", "5.0.15")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("ConfigurationCase.DAL.Entities.Configuration", b =>
+            modelBuilder.Entity("ConfigurationCase.Core.Entities.ConfigurationTb", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()

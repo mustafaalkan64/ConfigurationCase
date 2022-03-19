@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Configuration.Core.Consts;
+using ConfigurationCase.DAL;
 
 namespace ConfigurationCase.ConfigurationSource.Jobs
 {
@@ -25,10 +26,12 @@ namespace ConfigurationCase.ConfigurationSource.Jobs
         [AutomaticRetry(Attempts = 3)]
         public async Task GetConfigurationsAsync(string applicationName, string connectionString)
         {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlServer(connectionString);
 
-            using (var db = new ConfigurationDbContext(optionsBuilder.Options))
+            var contextOptions = new DbContextOptionsBuilder<ConfigurationDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
+
+            using (var db = new ConfigurationDbContext(contextOptions))
             {
                 var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
                 _redisCacheManager.Set(StaticVariables.CacheKey + $"_{applicationName}", records);

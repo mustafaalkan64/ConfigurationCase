@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConfigurationCase.CommonService;
 using ConfigurationCase.Core.CustomExceptions;
 using Configuration.Core.Consts;
 using Configuration.Core.Models;
 using AutoMapper;
+using ConfigurationCase.DAL;
 
 namespace ConfigurationCase.ConfigurationSource.Services
 {
@@ -60,7 +60,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
 
         public async Task UpdateRecord(UpdateConfigurationDto configurationDto)
         {
-            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID && x.ApplicationName == configurationDto.ApplicationName);
+            var configuration = await this.dbContext.Configuration.FirstOrDefaultAsync(x => x.ID == configurationDto.ID && x.ApplicationName == configurationDto.ApplicationName);
             if (configuration == null)
             {
                 throw new ArgumentException("ID Bulunamadı");
@@ -74,7 +74,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
 
         public async Task RemoveRecord(int Id, string appName)
         {
-            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == Id && x.ApplicationName == appName);
+            var configuration = await this.dbContext.Configuration.FirstOrDefaultAsync(x => x.ID == Id && x.ApplicationName == appName);
             if (configuration == null)
             {
                 throw new ArgumentException("ID Bulunamadı");
@@ -88,7 +88,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
 
         public async Task<IEnumerable<ConfigurationDto>> GetRecordsByTerm(string term, string appName)
         {
-            var result = await this.dbContext.Configuration.AsNoTracking().Where(x => (x.Name.Contains(term) || x.Value.Contains(term)) && x.ApplicationName == appName).ToListAsync();
+            var result = await this.dbContext.Configuration.Where(x => (x.Name.Contains(term) || x.Value.Contains(term)) && x.ApplicationName == appName).ToListAsync();
             var configurations = _mapper.Map<IEnumerable<ConfigurationDto>>(result);
             return configurations;
 
