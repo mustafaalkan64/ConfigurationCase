@@ -110,7 +110,7 @@ namespace Configuration.Tests.tests
             // Arrange
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            var returnConfigList = Assert.IsAssignableFrom<string>(okResult.Value);
+            Assert.IsAssignableFrom<string>(okResult.Value);
 
             Assert.Equal("boyner.com", okResult.Value);
 
