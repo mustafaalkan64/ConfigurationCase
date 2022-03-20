@@ -25,9 +25,9 @@ namespace Configuration.Tests
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
 
-                context.Configuration.Add(new ConfigurationCase.Core.Entities.Configuration { ID = 1, Name = "SiteName1", ApplicationName = "SERVICE-A", Type = Core.Enums.ConfigurationTypeEnum.String, IsActive = true, Value = "boyner.com" });
-                context.Configuration.Add(new ConfigurationCase.Core.Entities.Configuration { ID = 2, Name = "IsBasketEnabled", ApplicationName = "SERVICE-A", Type = Core.Enums.ConfigurationTypeEnum.Boolean, IsActive = true, Value = "1" });
-                context.Configuration.Add(new ConfigurationCase.Core.Entities.Configuration { ID = 3, Name = "MaxItemCount", ApplicationName = "SERVICE-A", Type = Core.Enums.ConfigurationTypeEnum.Int, IsActive = true, Value = "50" });
+                context.Configuration.Add(new ConfigurationCase.Core.Entities.Configuration { ID = 1, Name = "SiteName1", ApplicationName = "SERVICE-A-TEST", Type = Core.Enums.ConfigurationTypeEnum.String, IsActive = true, Value = "boyner.com" });
+                context.Configuration.Add(new ConfigurationCase.Core.Entities.Configuration { ID = 2, Name = "IsBasketEnabled", ApplicationName = "SERVICE-A-TEST", Type = Core.Enums.ConfigurationTypeEnum.Boolean, IsActive = true, Value = "1" });
+                context.Configuration.Add(new ConfigurationCase.Core.Entities.Configuration { ID = 3, Name = "MaxItemCount", ApplicationName = "SERVICE-A-TEST", Type = Core.Enums.ConfigurationTypeEnum.Int, IsActive = true, Value = "50" });
                 context.SaveChanges();
             }
         }

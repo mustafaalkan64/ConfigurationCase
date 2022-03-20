@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
+using ConfigurationCase.Core.Models;
+using Configuration.Core.Consts;
 
 namespace Configuration.Tests.tests
 {
@@ -29,10 +31,12 @@ namespace Configuration.Tests.tests
         private readonly IRedisCacheService _redisCacheManager;
 
         private readonly IOptions<AppSettings> _config;
+        private readonly IOptions<RedisServerConfig> _redisConfig;
         private readonly IConfiguration _configuration;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly IConfigurationService _configurationService;
         private ConfigurationController controller;
+        private readonly string AppName = "SERVICE-A-TEST";
 
         public ServiceATests()
         {
@@ -46,6 +50,11 @@ namespace Configuration.Tests.tests
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
             mapper = new Mapper(configuration);
 
+
+            _config = Options.Create<AppSettings>(new AppSettings() { Name = AppName });
+            _redisConfig = Options.Create<RedisServerConfig>(new RedisServerConfig() { PrivateKey = "test-private-key", DefaultRetryTimeout = 9999, RedisEndPoint = "localhost", RedisPort = 6379, RedisSsl = false, RedisTimeout = 60, RedisPassword = "" });
+            _redisCacheManager = new RedisCacheService(_redisConfig);
+
             _configurationService = new ConfigurationService(_redisCacheManager, mapper, _dbContext);
 
             //Arrange
@@ -58,14 +67,58 @@ namespace Configuration.Tests.tests
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
 
-            _config = Options.Create<AppSettings>(new AppSettings() {  Name = "SERVICE-A"});
-
             controller = new ConfigurationController(_config, _configuration, _publishEndpoint, _configurationService);
         }
 
 
         [Fact]
-        public async Task Ensure_ConfigurationCreated_Successfuly()
+        public async Task Ensure_Values_Should_Be_Listed()
+        {
+            // Act
+
+            IEnumerable<ConfigurationDto> configurationDtoList;
+            configurationDtoList = new List<ConfigurationDto>()
+            {
+                new ConfigurationDto() { ApplicationName = AppName, ID = 1, IsActive = true, Name = "SiteName1", Type = Core.Enums.ConfigurationTypeEnum.String, Value = "Test" },
+                new ConfigurationDto() { ApplicationName = AppName, ID = 2, IsActive = true, Name = "SiteName2", Type = Core.Enums.ConfigurationTypeEnum.Int, Value = "1" },
+            };
+            _redisCacheManager.Set(StaticVariables.CacheKey + $"_{AppName}", configurationDtoList);
+
+            // Assert
+            var result = await controller.GetValues();
+
+            // Arrange
+            var okResult = Assert.IsType<OkObjectResult>(result);
+
+            var returnConfigList = Assert.IsAssignableFrom<IEnumerable<ConfigurationDto>>(okResult.Value);
+
+            Assert.NotNull(returnConfigList);
+            Assert.Equal(2, returnConfigList.Count());
+
+        }
+
+
+        [Fact]
+        public async Task Get_Value_By_Key_Properly()
+        {
+            // Act
+            var key = "SiteName1";
+
+            // Assert
+            var result = await controller.GetValueByKey<string>(key);
+
+            // Arrange
+            var okResult = Assert.IsType<OkObjectResult>(result);
+
+            var returnConfigList = Assert.IsAssignableFrom<string>(okResult.Value);
+
+            Assert.Equal("boyner.com", okResult.Value);
+
+        }
+
+
+        [Fact]
+        public async Task Ensure_Configuration_Should_Be_Created_Successfuly()
         {
             //Arrange
             var configuration = new ConfigurationCase.Core.Entities.Configuration

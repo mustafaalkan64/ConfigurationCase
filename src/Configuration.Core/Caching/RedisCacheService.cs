@@ -42,7 +42,7 @@ namespace ConfigurationCase.Core.Caching
                     return client.Get<T>(key);
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 //throw new RedisNotAvailableException();
                 return default;
