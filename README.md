@@ -5,18 +5,24 @@ Asp.net Core 5 ile Configuration Kayıtlarının Read we Write Operasyonlarını
 # Projede Kullanılan Teknolojiler:
 
 - .Net 5 Core Restful Web Servisleri
-- EF Core 
+- EF Core Code First Migrations
 - Hangfire Jobs
 - Masstransit ve RabbitMq ile Message Broker
 - AutoMapper
 - Redis Cache
 - MsSql Server 
 
+# Common DAL:
+
+Db Context Nesnesinin ve Migrationların Bulunduğu Class Librarydir
+
 # CommonService:
 
 Okuma ve Yazma Operasyonlarının Yönetildiği Ortak Bir Servistir.
 Listeleme, Ekleme, Güncelleme ve Silme İşlemleri Yönetilir.
-GetValue methoduna da bu servis üzerinden erişebilir
+GetValue methoduna da bu servis üzerinden erişebilir.
+DAL Librarysini referans alıp veritabanına erişim işlemlerini DAL projesi içerisindeki
+Db Context nesnesi ile sağlar
 
 # ConfigurationSource
 
