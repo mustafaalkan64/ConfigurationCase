@@ -29,7 +29,7 @@ Db Context nesnesi ile sağlar
 Bu proje bağımsız bir web projesi olup, Service A ve Service B'den
 publish olan eventları consume ederek, event consume edildiği anda, parametreden
 gönderilen ConString, AppName ve Miliseconda göre belli aralıklarda Confgiuraton DB'ye istek atıp,
-son halini distributed Redis Cachea kayıtları atar.
+son ve güncel dataları distributed Redis Cachea atar.
 
 Bu projede Hangfire Job perform edilmiştir ve istenilen zaman aralıklarına göre Joblar execute edilir.
 Dashboard üzerinden de joblar monitoring edilebilir.
