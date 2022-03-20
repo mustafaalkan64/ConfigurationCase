@@ -34,16 +34,16 @@ namespace ConfigurationCase.ConfigurationSource.Services
             return (T)Convert.ChangeType(record?.Value ?? string.Empty, typeof(T));
         }
 
-        public async Task<IList<ConfigurationTb>> GetConfigurationsAsync(string applicationName)
+        public async Task<IEnumerable<ConfigurationDto>> GetConfigurationsAsync(string applicationName)
         {
-            IList<ConfigurationTb> result;
+            IEnumerable<ConfigurationDto> result;
             try
             {
-                result = _redisCacheManager.Get<List<ConfigurationTb>>(StaticVariables.CacheKey + $"_{applicationName}");
+                result = _redisCacheManager.Get<IEnumerable<ConfigurationDto>>(StaticVariables.CacheKey + $"_{applicationName}");
             }
             catch (RedisNotAvailableException)
             {
-                result = new List<ConfigurationTb>();
+                result = new List<ConfigurationDto>();
             }
             return result;
 
@@ -51,7 +51,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
 
         public async Task AddNewRecord(ConfigurationDto configurationDto)
         {
-            var configuration = _mapper.Map<ConfigurationTb>(configurationDto);
+            var configuration = _mapper.Map<Core.Entities.Configuration>(configurationDto);
             await this.dbContext.Configuration.AddAsync(configuration);
             await this.dbContext.SaveChangesAsync();
 
@@ -65,7 +65,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
             {
                 throw new ArgumentException("ID Bulunamadı");
             }
-            var updatedConfiguration = _mapper.Map<ConfigurationTb>(configurationDto);
+            var updatedConfiguration = _mapper.Map<Core.Entities.Configuration>(configurationDto);
             this.dbContext.Entry(updatedConfiguration).State = EntityState.Modified;
             await this.dbContext.SaveChangesAsync();
 

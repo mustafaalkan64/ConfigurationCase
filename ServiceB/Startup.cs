@@ -1,5 +1,5 @@
 using AutoMapper;
-using Configuration.CommonService.Mapper;
+using Configuration.Core.Mapper;
 using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.ConfigurationSource.Services;
 using ConfigurationCase.Core;

@@ -40,7 +40,7 @@ namespace ServiceA.Controllers
         public async Task<IActionResult> GetValues()
         {
             var appName = this.config.Value.Name;
-            IList<ConfigurationTb> result;
+            IEnumerable<ConfigurationDto> result;
             result = await _configurationService.GetConfigurationsAsync(appName);
             return Ok(result);
         }

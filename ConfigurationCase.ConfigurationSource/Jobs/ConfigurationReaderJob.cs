@@ -11,15 +11,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Configuration.Core.Consts;
 using ConfigurationCase.DAL;
+using AutoMapper;
+using Configuration.Core.Models;
 
 namespace ConfigurationCase.ConfigurationSource.Jobs
 {
     public class ConfigurationReaderJob
     {
         private readonly IRedisCacheService _redisCacheManager;
-        public ConfigurationReaderJob(IRedisCacheService redisCacheManager)
+        private readonly IMapper _mapper;
+        public ConfigurationReaderJob(IRedisCacheService redisCacheManager, IMapper mapper)
         {
             _redisCacheManager = redisCacheManager;
+            _mapper = mapper;   
         }
 
         [JobDisplayName("GetConfigurationsAsync")]
@@ -34,7 +38,8 @@ namespace ConfigurationCase.ConfigurationSource.Jobs
             using (var db = new ConfigurationDbContext(contextOptions))
             {
                 var records = await db.Configuration.Where(x => x.ApplicationName == applicationName && x.IsActive).ToListAsync();
-                _redisCacheManager.Set(StaticVariables.CacheKey + $"_{applicationName}", records);
+                var configurationList = _mapper.Map <IEnumerable<ConfigurationDto>>(records);
+                _redisCacheManager.Set(StaticVariables.CacheKey + $"_{applicationName}", configurationList);
             }
 
         }

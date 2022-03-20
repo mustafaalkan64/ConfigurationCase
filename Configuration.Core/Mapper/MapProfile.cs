@@ -7,14 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Configuration.CommonService.Mapper
+namespace Configuration.Core.Mapper
 {
     public class MapProfile : Profile
     {
         public MapProfile()
         {
-            CreateMap<ConfigurationTb, ConfigurationDto>().ReverseMap();
-            CreateMap<ConfigurationTb, UpdateConfigurationDto>().ReverseMap();
+            CreateMap<ConfigurationCase.Core.Entities.Configuration, ConfigurationDto>().ReverseMap();
+            CreateMap<ConfigurationCase.Core.Entities.Configuration, UpdateConfigurationDto>().ReverseMap();
         }
     }
 }

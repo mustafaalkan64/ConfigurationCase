@@ -1,3 +1,5 @@
+using AutoMapper;
+using Configuration.Core.Mapper;
 using ConfigurationCase.ConfigurationSource.Abstracts;
 using ConfigurationCase.ConfigurationSource.Consumers;
 using ConfigurationCase.ConfigurationSource.Services;
@@ -76,6 +78,14 @@ namespace ConfigurationCase.ConfigurationSource
             });
 
             services.AddMassTransitHostedService();
+
+            //Automapper
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MapProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

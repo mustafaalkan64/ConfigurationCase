@@ -10,7 +10,7 @@ namespace ConfigurationCase.ConfigurationSource.Abstracts
 {
     public interface IConfigurationService
     {
-        Task<IList<ConfigurationTb>> GetConfigurationsAsync(string applicationName);
+        Task<IEnumerable<ConfigurationDto>> GetConfigurationsAsync(string applicationName);
         Task<T> GetValue<T>(string key, string appName);
         Task AddNewRecord(ConfigurationDto configurationDto);
         Task UpdateRecord(UpdateConfigurationDto configurationDto);

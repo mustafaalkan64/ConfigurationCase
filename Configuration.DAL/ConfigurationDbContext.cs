@@ -18,6 +18,6 @@ namespace ConfigurationCase.DAL
         {
         }
 
-        public DbSet<ConfigurationTb> Configuration { get; set; }
+        public DbSet<Core.Entities.Configuration> Configuration { get; set; }
     }
 }
