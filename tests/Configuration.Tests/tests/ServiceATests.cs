@@ -52,7 +52,7 @@ namespace Configuration.Tests.tests
 
 
             _config = Options.Create<AppSettings>(new AppSettings() { Name = AppName });
-            _redisConfig = Options.Create<RedisServerConfig>(new RedisServerConfig() { PrivateKey = "test-private-key", DefaultRetryTimeout = 9999, RedisEndPoint = "localhost", RedisPort = 6379, RedisSsl = false, RedisTimeout = 60, RedisPassword = "" });
+            _redisConfig = Options.Create<RedisServerConfig>(new RedisServerConfig() { PrivateKey = "test-private-key", RedisEndPoint = "localhost", RedisPort = 6379, RedisSsl = false, RedisTimeout = 60, RedisPassword = "" });
             _redisCacheManager = new RedisCacheService(_redisConfig);
 
             _configurationService = new ConfigurationService(_redisCacheManager, mapper, _dbContext);
@@ -105,7 +105,7 @@ namespace Configuration.Tests.tests
             var key = "SiteName1";
 
             // Assert
-            var result = await controller.GetValueByKey<string>(key);
+            var result = await controller.GetValueByKey(key);
 
             // Arrange
             var okResult = Assert.IsType<OkObjectResult>(result);
