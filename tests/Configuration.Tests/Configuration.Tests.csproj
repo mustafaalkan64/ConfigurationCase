@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -22,13 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ConfigurationCase.ConfigurationSource\ConfigurationCase.ConfigurationSource.csproj" />
-    <ProjectReference Include="..\..\ServiceA\ServiceA.csproj" />
-    <ProjectReference Include="..\..\ServiceB\ServiceB.csproj" />
+    <Folder Include="tests\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="tests\" />
+    <ProjectReference Include="..\..\src\ConfigurationCase.ConfigurationSource\ConfigurationCase.ConfigurationSource.csproj" />
+    <ProjectReference Include="..\..\src\ServiceA\ServiceA.csproj" />
+    <ProjectReference Include="..\..\src\ServiceB\ServiceB.csproj" />
   </ItemGroup>
 
 </Project>
