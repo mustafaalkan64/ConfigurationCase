@@ -60,7 +60,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
 
         public async Task UpdateRecord(UpdateConfigurationDto configurationDto)
         {
-            var configuration = await this.dbContext.Configuration.FirstOrDefaultAsync(x => x.ID == configurationDto.ID && x.ApplicationName == configurationDto.ApplicationName);
+            var configuration = await this.dbContext.Configuration.AsNoTracking().FirstOrDefaultAsync(x => x.ID == configurationDto.ID && x.ApplicationName == configurationDto.ApplicationName);
             if (configuration == null)
             {
                 throw new ArgumentException("ID Bulunamadı");
@@ -68,6 +68,7 @@ namespace ConfigurationCase.ConfigurationSource.Services
             var updatedConfiguration = _mapper.Map<Core.Entities.Configuration>(configurationDto);
             this.dbContext.Entry(updatedConfiguration).State = EntityState.Modified;
             await this.dbContext.SaveChangesAsync();
+            this.dbContext.Entry(updatedConfiguration).State = EntityState.Detached;
 
         }
 

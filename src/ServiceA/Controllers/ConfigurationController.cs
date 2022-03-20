@@ -77,7 +77,7 @@ namespace ServiceA.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> PostConfiguration(AddConfigurationDto addConfigurationDto)
+        public async Task<IActionResult> AddConfiguration(AddConfigurationDto addConfigurationDto)
         {
             ConfigurationDto configurationDto = new ConfigurationDto()
             {

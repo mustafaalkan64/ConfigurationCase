@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="tests\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\ConfigurationCase.ConfigurationSource\ConfigurationCase.ConfigurationSource.csproj" />
     <ProjectReference Include="..\..\src\ServiceA\ServiceA.csproj" />
     <ProjectReference Include="..\..\src\ServiceB\ServiceB.csproj" />
