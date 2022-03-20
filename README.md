@@ -1,6 +1,6 @@
 # Configuration Case
 
-Asp.net Core 5 ile Configuration Kayıtlarının Read we Write Operasyonlarının Yapıldığı Solution 
+Asp.net Core 5 ile Farklı Projelere ait  Configuration Kayıtlarının Read we Write Operasyonlarının Yapıldığı Solution 
 
 # Projede Kullanılan Teknolojiler:
 
