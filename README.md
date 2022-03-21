@@ -1,6 +1,8 @@
 # Configuration Case
 
-Asp.net Core 5 ile Farklı Projelere ait  Configuration Kayıtlarının Read we Write Operasyonlarının Yapıldığı Solution 
+Asp.net Core 5 ile Farklı Projelerin Ortak Bir servis üzerinden Db Read ve Write Operasyonları Yapıldığı ve
+RabbitMq üzerinden Message Broker ile Farklı bir Web Api Projesinin Hangfire Jobları ile Güncel kayıtları
+dinleyip Redis Cache'e kayıt atan bir solution.
 
 # Projede Kullanılan Teknolojiler:
 
